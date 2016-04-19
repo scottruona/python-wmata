@@ -1,11 +1,5 @@
 import datetime
-from urllib import urlencode
-from urllib2 import urlopen
-
-try:
-    import json
-except ImportError:
-    import simplejson as json
+import requests
 
 
 class WmataException(Exception):
@@ -14,26 +8,20 @@ class WmataException(Exception):
 
 class Wmata(object):
 
-    base_url = 'http://api.wmata.com/%(svc)s.svc/json/%(endpoint)s'
+    base_url = 'https://api.wmata.com/{svc}.svc/json/{endpoint}'
 
-    def __init__(self, apikey):
-        self.apikey = apikey
-
-    def _build_url(self, svc, endpoint, query={}):
-        query.update({'api_key': self.apikey})
-        query.update({'subscription-key': self.apikey})
-        url = self.base_url % {'svc': svc, 'endpoint': endpoint}
-        return '%s?%s' % (url, urlencode(query))
-
+    def __init__(self, api_key):
+        self.api_key = api_key
+        
     def _get(self, svc, endpoint, query={}):
-        self.url = self._build_url(svc, endpoint, query)
-        response = urlopen(self.url)
+        query.update({'api_key': self.api_key})
+        url = self.base_url.format(svc=svc, endpoint=endpoint)
+        response = requests.get(url, params=query)
 
-        if response.msg == 'OK':
-            self.data = json.loads(response.read())
-            return self.data
+        if response.reason == 'OK':
+            return self.json()
 
-        raise WmataException('Got invalid response from WMATA server: %s' % response.msg)
+        raise WmataException('Got invalid response from WMATA server: \nCode: {code}\nMessage: {msg}'.format(code=response.status_code, msg=response.reason)
 
     def lines(self):
         return self._get('Rail', 'JLines')['Lines']
@@ -51,7 +39,7 @@ class Wmata(object):
         return self._get('StationPrediction', 'GetPrediction/%s' % station_code)['Trains']
 
     def rail_incidents(self):
-        return self._get('Incidents', 'Incidents')
+        return self._get('Incidents', 'Incidents')['Incidents']
 
     def elevator_incidents(self, station_code='All'):
         return self._get('Incidents', 'ElevatorIncidents', {'StationCode': station_code})
