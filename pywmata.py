@@ -21,7 +21,7 @@ class Wmata(object):
         if response.reason == 'OK':
             return self.json()
 
-        raise WmataException('Got invalid response from WMATA server: \nCode: {code}\nMessage: {msg}'.format(code=response.status_code, msg=response.reason)
+        raise WmataException('Got invalid response from WMATA server: \nCode: {code}\nMessage: {msg}'.format(code=response.status_code, msg=response.reason))
 
     def lines(self):
         return self._get('Rail', 'JLines')['Lines']
