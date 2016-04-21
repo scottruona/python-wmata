@@ -2,7 +2,7 @@
 This is a Python library for accessing data via the WMATA Metro Transparent Data Sets API. More information is available at [http://developer.wmata.com](http://developer.wmata.com)
 
 ## Requirements
-Python >= 2.6 or (Python >= 2.5 and simplejson)
+`pip install requests`
 
 ## Usage
 
