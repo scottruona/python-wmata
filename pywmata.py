@@ -19,7 +19,7 @@ class Wmata(object):
         response = requests.get(url, params=query)
 
         if response.reason == 'OK':
-            return self.json()
+            return response.json()
 
         raise WmataException('Got invalid response from WMATA server: \nCode: {code}\nMessage: {msg}'.format(code=response.status_code, msg=response.reason))
 
