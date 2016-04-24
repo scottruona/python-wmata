@@ -28,6 +28,9 @@ class Wmata(object):
 
     def stations(self, line_code):
         return self._get('Rail', 'JStations', {'LineCode': line_code})['Stations']
+        
+    def all_stations(self):
+        return self._get('Rail', 'JStations',)['Stations']
 
     def station_info(self, station_code):
         return self._get('Rail', 'JStationInfo', {'StationCode': station_code})
